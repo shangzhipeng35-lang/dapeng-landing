@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中介门店汇总 — xiaoshen.xin</title>
+  <meta name="description" content="桐乡市中介门店汇总数据，涵盖澳丽、睿房、乐远、德佑四大品牌">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F5F5F7;
+      --bg-card: #FFFFFF;
+      --text-primary: #1D1D1F;
+      --text-secondary: #6E6E73;
+      --text-tertiary: #86868B;
+      --border: #D2D2D7;
+      --border-light: #E8E8ED;
+      --header-bg: #191D2B;
+      --header-text: #FFFFFF;
+      --header-secondary: #8B8FA3;
+      --accent: #0071E3;
+      --accent-hover: #0077ED;
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-card-hover: 0 4px 16px rgba(0,0,0,0.1);
+      --transition: 0.2s ease;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== Header ===== */
+    .header {
+      background: var(--header-bg);
+      padding: 28px 24px;
+      text-align: center;
+    }
+
+    .header__inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header__title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--header-text);
+      letter-spacing: -0.02em;
+    }
+
+    .header__meta {
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--header-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .header__meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .header__source {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 2px 10px;
+      font-size: 12px;
+      color: var(--header-secondary);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 20px;
+    }
+
+    /* ===== Back Link ===== */
+    .back-link {
+      position: absolute;
+      top: 28px;
+      left: 24px;
+      color: rgba(255,255,255,0.6);
+      font-size: 14px;
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .back-link:hover { color: #fff; }
+
+    /* ===== Main Container ===== */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ===== City Tabs ===== */
+    .city-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .city-tab {
+      padding: 8px 20px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: inherit;
+    }
+
+    .city-tab:hover {
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
+    }
+
+    .city-tab.active {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .city-tab .count {
+      margin-left: 4px;
+      font-size: 13px;
+      opacity: 0.7;
+    }
+
+    /* ===== Stats Cards ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      box-shadow: var(--shadow-card);
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .stat-card.active {
+      border-color: currentColor;
+      background: color-mix(in srgb, currentColor 6%, var(--bg-card));
+      box-shadow: 0 0 0 1px currentColor, 0 4px 16px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: currentColor;
+    }
+
+    .stat-card__brand {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .stat-card__count {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-card__label {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    /* ===== Filter Bar ===== */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .brand-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .brand-filter {
+      padding: 5px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: inherit;
+    }
+
+    .brand-filter:hover {
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
+    }
+
+    .brand-filter.active {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      max-width: 320px;
+      margin-left: auto;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 16px;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      outline: none;
+      font-family: inherit;
+      transition: border-color var(--transition);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .result-count {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+
+    /* ===== Table ===== */
+    .table-wrapper {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    thead {
+      background: #FAFAFA;
+      border-bottom: 2px solid var(--border-light);
+    }
+
+    th {
+      padding: 14px 20px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color var(--transition);
+    }
+
+    th:hover { color: var(--text-primary); }
+
+    th .sort-icon {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 10px;
+      color: var(--text-tertiary);
+      transition: color var(--transition);
+    }
+
+    th.sorted .sort-icon { color: var(--accent); }
+
+    td {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-primary);
+    }
+
+    tbody tr { transition: background var(--transition); }
+
+    tbody tr:hover { background: #FAFBFC; }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    .td-seq {
+      width: 60px;
+      color: var(--text-tertiary);
+      font-size: 13px;
+    }
+
+    .td-brand {
+      width: 80px;
+    }
+
+    .brand-tag {
+      display: inline-block;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .td-name {
+      font-weight: 500;
+    }
+
+    .td-address {
+      color: var(--text-secondary);
+      max-width: 400px;
+      word-break: break-all;
+    }
+
+    /* ===== Empty State ===== */
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--text-tertiary);
+    }
+
+    .empty-state__icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state__text {
+      font-size: 15px;
+    }
+
+    /* ===== Footer ===== */
+    .footer {
+      max-width: 1200px;
+      margin: 40px auto 0;
+      padding: 0 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer a:hover { color: var(--accent-hover); }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 900px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-box {
+        max-width: none;
+        margin-left: 0;
+      }
+
+      th, td { padding: 12px 14px; }
+    }
+
+    @media (max-width: 600px) {
+      .header__title { font-size: 22px; }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .stat-card {
+        padding: 16px;
+      }
+
+      .stat-card__count {
+        font-size: 28px;
+      }
+
+      .back-link {
+        position: static;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+
+      .header {
+        padding: 20px 16px;
+        text-align: left;
+      }
+
+      .header__meta {
+        justify-content: flex-start;
+      }
+
+      th, td { padding: 10px 12px; font-size: 13px; }
+
+      .main { padding: 0 12px 60px; }
+
+      table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header__inner">
+      <a href="/" class="back-link">← xiaoshen.xin</a>
+      <h1 class="header__title" id="pageTitle">中介门店汇总</h1>
+      <div class="header__meta">
+        <span id="headerUpdated"></span>
+        <span id="headerTotal"></span>
+        <span class="header__source" id="headerSource"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main">
+    <!-- City Tabs -->
+    <div class="city-tabs" id="cityTabs"></div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="brand-filters" id="brandFilters"></div>
+      <div class="search-box">
+        <input type="text" class="search-input" id="searchInput" placeholder="搜索门店名称或地址…">
+      </div>
+      <div class="result-count" id="resultCount"></div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="td-seq">序号</th>
+              <th class="td-brand">品牌</th>
+              <th class="td-name" data-sort="name">门店名称 <span class="sort-icon">↕</span></th>
+              <th class="td-address" data-sort="address">详细地址 <span class="sort-icon">↕</span></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <div class="empty-state__icon">📭</div>
+        <div class="empty-state__text">没有匹配的门店</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p id="footerText"></p>
+    <p style="margin-top:4px;"><a href="/">xiaoshen.xin</a></p>
+  </footer>
+
+  <script>
+  (function() {
+    // ===== State =====
+    let data = null;
+    let currentCityId = null;
+    let currentBrand = '全部';
+    let searchQuery = '';
+    let sortKey = null;
+    let sortAsc = true;
+
+    // ===== DOM refs =====
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+
+    // ===== Load Data =====
+    async function init() {
+      try {
+        const res = await fetch('/zhongjie/data.json');
+        if (!res.ok) throw new Error('Failed to load data');
+        data = await res.json();
+      } catch (e) {
+        $('body').innerHTML = '<div style="text-align:center;padding:120px 24px;color:#86868B;font-size:17px">数据加载失败，请刷新页面重试</div>';
+        return;
+      }
+
+      // Set header info
+      $('#pageTitle').textContent = data.title;
+      $('#headerUpdated').textContent = '更新：' + data.updated;
+      $('#headerTotal').textContent = '共 ' + data.total + ' 家门店';
+      $('#headerSource').textContent = '数据来源：' + data.source;
+      $('#footerText').textContent = '数据来源：' + data.source + ' · 统计截止 ' + data.updated + ' · 持续更新中';
+
+      // Default to first city
+      if (data.cities.length > 0) {
+        currentCityId = data.cities[0].id;
+      }
+
+      renderCityTabs();
+      renderAll();
+    }
+
+    // ===== City Tabs =====
+    function renderCityTabs() {
+      const el = $('#cityTabs');
+      el.innerHTML = data.cities.map(c => {
+        const active = c.id === currentCityId ? ' active' : '';
+        return `<button class="city-tab${active}" data-city="${c.id}">${c.name}<span class="count">${c.total}</span></button>`;
+      }).join('');
+
+      el.addEventListener('click', (e) => {
+        const btn = e.target.closest('.city-tab');
+        if (!btn) return;
+        currentCityId = btn.dataset.city;
+        currentBrand = '全部';
+        searchQuery = '';
+        $('#searchInput').value = '';
+        sortKey = null;
+        sortAsc = true;
+        renderCityTabs();
+        renderAll();
+      });
+    }
+
+    function getCurrentCity() {
+      return data.cities.find(c => c.id === currentCityId);
+    }
+
+    // ===== Stats Cards =====
+    function renderStatsCards() {
+      const city = getCurrentCity();
+      if (!city) return;
+
+      const el = $('#statsGrid');
+      const brands = city.brands;
+      const totalCount = city.total;
+
+      let html = '';
+
+      // "全部" card
+      const allActive = currentBrand === '全部';
+      html += `
+        <div class="stat-card${allActive ? ' active' : ''}" data-brand="全部" style="color:#636366">
+          <div class="stat-card__brand">全部门店</div>
+          <div class="stat-card__count">${totalCount}</div>
+          <div class="stat-card__label">家门店</div>
+        </div>`;
+
+      // Brand cards
+      for (const [name, info] of Object.entries(brands)) {
+        const active = currentBrand === name;
+        html += `
+          <div class="stat-card${active ? ' active' : ''}" data-brand="${name}" style="color:${info.color}">
+            <div class="stat-card__brand">${name}</div>
+            <div class="stat-card__count">${info.count}</div>
+            <div class="stat-card__label">家门店</div>
+          </div>`;
+      }
+
+      el.innerHTML = html;
+
+      el.addEventListener('click', (e) => {
+        const card = e.target.closest('.stat-card');
+        if (!card) return;
+        currentBrand = card.dataset.brand;
+        renderAll();
+      });
+    }
+
+    // ===== Brand Filters =====
+    function renderBrandFilters() {
+      const city = getCurrentCity();
+      if (!city) return;
+
+      const el = $('#brandFilters');
+      const brands = Object.keys(city.brands);
+      let html = '<button class="brand-filter' + (currentBrand === '全部' ? ' active' : '') + '" data-brand="全部">全部</button>';
+      for (const b of brands) {
+        html += '<button class="brand-filter' + (currentBrand === b ? ' active' : '') + '" data-brand="' + b + '">' + b + '</button>';
+      }
+      el.innerHTML = html;
+
+      el.addEventListener('click', (e) => {
+        const btn = e.target.closest('.brand-filter');
+        if (!btn) return;
+        currentBrand = btn.dataset.brand;
+        renderAll();
+      });
+    }
+
+    // ===== Get Filtered Stores =====
+    function getFilteredStores() {
+      const city = getCurrentCity();
+      if (!city) return [];
+
+      let stores = city.stores;
+
+      if (currentBrand !== '全部') {
+        stores = stores.filter(s => s.brand === currentBrand);
+      }
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.trim().toLowerCase();
+        stores = stores.filter(s =>
+          s.name.toLowerCase().includes(q) ||
+          s.address.toLowerCase().includes(q)
+        );
+      }
+
+      if (sortKey) {
+        stores = [...stores].sort((a, b) => {
+          const va = (a[sortKey] || '').toLowerCase();
+          const vb = (b[sortKey] || '').toLowerCase();
+          if (va < vb) return sortAsc ? -1 : 1;
+          if (va > vb) return sortAsc ? 1 : -1;
+          return 0;
+        });
+      }
+
+      return stores;
+    }
+
+    // ===== Render Table =====
+    function renderTable() {
+      const stores = getFilteredStores();
+      const tbody = $('#tableBody');
+      const empty = $('#emptyState');
+      const count = $('#resultCount');
+
+      count.textContent = '共 ' + stores.length + ' 条';
+
+      if (stores.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      const brandColors = {};
+      const city = getCurrentCity();
+      if (city) {
+        for (const [name, info] of Object.entries(city.brands)) {
+          brandColors[name] = info.color;
+        }
+      }
+
+      tbody.innerHTML = stores.map((s, i) => `
+        <tr>
+          <td class="td-seq">${i + 1}</td>
+          <td class="td-brand"><span class="brand-tag" style="background:${brandColors[s.brand] || '#888'}">${s.brand}</span></td>
+          <td class="td-name">${escHtml(s.name)}</td>
+          <td class="td-address">${escHtml(s.address)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function escHtml(str) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+      return str.replace(/[&<>"']/g, c => map[c]);
+    }
+
+    // ===== Sort Handling =====
+    function setupSort() {
+      const ths = $$('th[data-sort]');
+      ths.forEach(th => {
+        th.addEventListener('click', () => {
+          const key = th.dataset.sort;
+          if (sortKey === key) {
+            sortAsc = !sortAsc;
+          } else {
+            sortKey = key;
+            sortAsc = true;
+          }
+
+          ths.forEach(t => t.classList.remove('sorted'));
+          th.classList.add('sorted');
+
+          const icon = th.querySelector('.sort-icon');
+          if (icon) {
+            icon.textContent = sortAsc ? '↑' : '↓';
+          }
+
+          renderTable();
+        });
+      });
+    }
+
+    // ===== Search =====
+    function setupSearch() {
+      const input = $('#searchInput');
+      let debounceTimer;
+      input.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          searchQuery = input.value;
+          renderTable();
+        }, 200);
+      });
+    }
+
+    // ===== Render All =====
+    function renderAll() {
+      renderCityTabs();
+      renderStatsCards();
+      renderBrandFilters();
+      renderTable();
+    }
+
+    // ===== Start =====
+    init().then(() => {
+      setupSort();
+      setupSearch();
+      renderTable();
+    });
+  })();
+  </script>
+
+</body>
+</html>
