@@ -6,6 +6,7 @@
   <title>中介门店汇总 — xiaoshen.xin</title>
   <meta name="description" content="桐乡市中介门店汇总数据，涵盖澳丽、睿房、乐远、德佑四大品牌">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+  <link rel="preload" href="https://dapeng-site.oss-cn-hongkong.aliyuncs.com/zhongjie/data.json" as="fetch" crossorigin="anonymous">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -83,19 +84,6 @@
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 20px;
     }
-
-    /* ===== Back Link ===== */
-    .back-link {
-      position: absolute;
-      top: 28px;
-      left: 24px;
-      color: rgba(255,255,255,0.6);
-      font-size: 14px;
-      text-decoration: none;
-      transition: color var(--transition);
-    }
-
-    .back-link:hover { color: #fff; }
 
     /* ===== Main Container ===== */
     .main {
@@ -399,6 +387,58 @@
 
     .footer a:hover { color: var(--accent-hover); }
 
+    /* ===== Loading Skeleton ===== */
+    .skeleton {
+      animation: skeleton-pulse 1.5s ease-in-out infinite;
+      background: linear-gradient(90deg, #E8E8ED 25%, #F0F0F5 50%, #E8E8ED 75%);
+      background-size: 200% 100%;
+      border-radius: 6px;
+    }
+
+    @keyframes skeleton-pulse {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .skeleton-card__line {
+      height: 14px;
+      margin-bottom: 12px;
+    }
+
+    .skeleton-card__line--short { width: 50%; }
+
+    .skeleton-card__line--big {
+      height: 36px;
+      width: 40%;
+      margin-bottom: 8px;
+    }
+
+    .skeleton-row {
+      display: flex;
+      gap: 20px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .skeleton-row__cell {
+      height: 16px;
+    }
+
+    .skeleton-row__cell--seq { width: 40px; }
+    .skeleton-row__cell--brand { width: 60px; }
+    .skeleton-row__cell--name { width: 160px; }
+    .skeleton-row__cell--addr { flex: 1; }
+
+    #skeletonLoader { display: block; }
+    #skeletonLoader.is-hidden { display: none; }
+
     /* ===== Responsive ===== */
     @media (max-width: 900px) {
       .stats-grid {
@@ -434,12 +474,6 @@
         font-size: 28px;
       }
 
-      .back-link {
-        position: static;
-        display: inline-block;
-        margin-bottom: 8px;
-      }
-
       .header {
         padding: 20px 16px;
         text-align: left;
@@ -462,7 +496,6 @@
   <!-- Header -->
   <header class="header">
     <div class="header__inner">
-      <a href="/" class="back-link">← xiaoshen.xin</a>
       <h1 class="header__title" id="pageTitle">中介门店汇总</h1>
       <div class="header__meta">
         <span id="headerUpdated"></span>
@@ -474,39 +507,65 @@
 
   <!-- Main Content -->
   <main class="main">
-    <!-- City Tabs -->
-    <div class="city-tabs" id="cityTabs"></div>
-
-    <!-- Stats Cards -->
-    <div class="stats-grid" id="statsGrid"></div>
-
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-      <div class="brand-filters" id="brandFilters"></div>
-      <div class="search-box">
-        <input type="text" class="search-input" id="searchInput" placeholder="搜索门店名称或地址…">
+    <!-- Skeleton Loader -->
+    <div id="skeletonLoader">
+      <!-- City tabs skeleton -->
+      <div style="display:flex;gap:8px;padding:24px 0">
+        <div class="skeleton" style="width:80px;height:36px;border-radius:20px"></div>
       </div>
-      <div class="result-count" id="resultCount"></div>
+      <!-- Stats cards skeleton -->
+      <div class="stats-grid">
+        <div class="skeleton-card"><div class="skeleton skeleton-card__line--short"></div><div class="skeleton skeleton-card__line--big"></div><div class="skeleton skeleton-card__line" style="width:30%"></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-card__line--short"></div><div class="skeleton skeleton-card__line--big"></div><div class="skeleton skeleton-card__line" style="width:30%"></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-card__line--short"></div><div class="skeleton skeleton-card__line--big"></div><div class="skeleton skeleton-card__line" style="width:30%"></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-card__line--short"></div><div class="skeleton skeleton-card__line--big"></div><div class="skeleton skeleton-card__line" style="width:30%"></div></div>
+      </div>
+      <!-- Table skeleton -->
+      <div class="table-wrapper">
+        <div style="background:#FAFAFA;border-bottom:2px solid #E8E8ED;padding:14px 20px;display:flex;gap:20px">
+          <div class="skeleton" style="width:40px;height:14px"></div>
+          <div class="skeleton" style="width:60px;height:14px"></div>
+          <div class="skeleton" style="width:120px;height:14px"></div>
+          <div class="skeleton" style="flex:1;height:14px"></div>
+        </div>
+        <div class="skeleton-row"><div class="skeleton skeleton-row__cell skeleton-row__cell--seq"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--brand"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--name"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--addr"></div></div>
+        <div class="skeleton-row"><div class="skeleton skeleton-row__cell skeleton-row__cell--seq"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--brand"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--name"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--addr"></div></div>
+        <div class="skeleton-row"><div class="skeleton skeleton-row__cell skeleton-row__cell--seq"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--brand"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--name"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--addr"></div></div>
+        <div class="skeleton-row"><div class="skeleton skeleton-row__cell skeleton-row__cell--seq"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--brand"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--name"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--addr"></div></div>
+        <div class="skeleton-row"><div class="skeleton skeleton-row__cell skeleton-row__cell--seq"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--brand"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--name"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--addr"></div></div>
+        <div class="skeleton-row"><div class="skeleton skeleton-row__cell skeleton-row__cell--seq"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--brand"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--name"></div><div class="skeleton skeleton-row__cell skeleton-row__cell--addr"></div></div>
+      </div>
     </div>
 
-    <!-- Table -->
-    <div class="table-wrapper">
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th class="td-seq">序号</th>
-              <th class="td-brand">品牌</th>
-              <th class="td-name" data-sort="name">门店名称 <span class="sort-icon">↕</span></th>
-              <th class="td-address" data-sort="address">详细地址 <span class="sort-icon">↕</span></th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
+    <!-- Real Content (hidden until data loads) -->
+    <div id="realContent" style="display:none">
+      <div class="city-tabs" id="cityTabs"></div>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="filter-bar">
+        <div class="brand-filters" id="brandFilters"></div>
+        <div class="search-box">
+          <input type="text" class="search-input" id="searchInput" placeholder="搜索门店名称或地址…">
+        </div>
+        <div class="result-count" id="resultCount"></div>
       </div>
-      <div class="empty-state" id="emptyState" style="display:none">
-        <div class="empty-state__icon">📭</div>
-        <div class="empty-state__text">没有匹配的门店</div>
+      <div class="table-wrapper">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th class="td-seq">序号</th>
+                <th class="td-brand">品牌</th>
+                <th class="td-name" data-sort="name">门店名称 <span class="sort-icon">↕</span></th>
+                <th class="td-address" data-sort="address">详细地址 <span class="sort-icon">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <div class="empty-state__icon">📭</div>
+          <div class="empty-state__text">没有匹配的门店</div>
+        </div>
       </div>
     </div>
   </main>
@@ -534,7 +593,7 @@
     // ===== Load Data =====
     async function init() {
       try {
-        const res = await fetch('/zhongjie/data.json');
+        const res = await fetch('https://dapeng-site.oss-cn-hongkong.aliyuncs.com/zhongjie/data.json');
         if (!res.ok) throw new Error('Failed to load data');
         data = await res.json();
       } catch (e) {
@@ -553,6 +612,10 @@
       if (data.cities.length > 0) {
         currentCityId = data.cities[0].id;
       }
+
+      // Swap skeleton for real content
+      $('#skeletonLoader').classList.add('is-hidden');
+      $('#realContent').style.display = '';
 
       renderCityTabs();
       renderAll();
